@@ -12,7 +12,7 @@ module EasyLogging
     end
   end
 
-  class << self; attr_accessor :log_destination, :level, :formatter; end
+  class << self; attr_accessor :log_destination, :level, :formatter, :logger; end
 
   @log_destination = STDOUT
   @level = Logger::INFO
@@ -33,7 +33,6 @@ module EasyLogging
     base.send :prepend, Initializer
     # Class level private logger method for includer class (base)
     class << base
-      private
       def logger
         @logger ||= EasyLogging.logger_for(self)
       end
@@ -56,10 +55,11 @@ module EasyLogging
     logger
   end
 
-  private
+  def self.logger
+    @logger ||= logger_for(self.class.name)
+  end
 
   def logger
     @logger ||= EasyLogging.logger_for(self.class.name)
   end
-
 end
